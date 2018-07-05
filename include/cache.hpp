@@ -5,6 +5,7 @@
 #include <limits>
 #include <memory>
 #include <mutex>
+#include <functional>
 #include <unordered_map>
 #include "cache_policy.hpp"
 
