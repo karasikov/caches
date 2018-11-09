@@ -30,7 +30,7 @@ class NoCachePolicy : public ICachePolicy<Key> {
     key_storage.emplace(key);
   }
 
-  void Touch(const Key& key) override {
+  void Touch(const Key& /*key*/) override {
     // do not do anything
   }
 
