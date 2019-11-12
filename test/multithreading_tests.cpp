@@ -32,7 +32,7 @@ typedef ::testing::Types<lfu_cache_t<int, size_t>, lru_cache_t<int, size_t>,
                          nopolicy_cache_t<int, size_t>>
     CacheTypes;
 
-TYPED_TEST_CASE(CacheTest, CacheTypes);
+TYPED_TEST_SUITE(CacheTest, CacheTypes);
 
 TYPED_TEST(CacheTest, Multithreaded)
 {
