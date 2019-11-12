@@ -19,6 +19,8 @@ template <typename Key> class ICachePolicy
     // handle element deletion from a cache
     virtual void Erase(const Key &key) = 0;
 
+    virtual void Clear() = 0;
+
     // return a key of a replacement candidate
     virtual const Key &ReplCandidate() const = 0;
 };
@@ -42,6 +44,11 @@ template <typename Key> class NoCachePolicy : public ICachePolicy<Key>
     void Erase(const Key &key) override
     {
         key_storage.erase(key);
+    }
+
+    void Clear() override
+    {
+        key_storage.clear();
     }
 
     // return a key of a displacement candidate

@@ -27,6 +27,11 @@ template <typename Key> class FIFOCachePolicy : public ICachePolicy<Key>
         fifo_queue.pop_back();
     }
 
+    void Clear() override
+    {
+        fifo_queue.clear();
+    }
+
     // return a key of a replacement candidate
     const Key &ReplCandidate() const override
     {

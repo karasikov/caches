@@ -34,6 +34,12 @@ template <typename Key> class LRUCachePolicy : public ICachePolicy<Key>
         lru_queue.pop_back();
     }
 
+    void Clear() override
+    {
+        key_finder.clear();
+        lru_queue.clear();
+    }
+
     // return a key of a displacement candidate
     const Key &ReplCandidate() const override
     {
