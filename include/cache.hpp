@@ -125,7 +125,7 @@ class fixed_sized_cache
     void Insert(const Key &key, const Value &value)
     {
         cache_policy.Insert(key);
-        cache_items_map.emplace(std::make_pair(key, value));
+        cache_items_map.emplace(key, value);
     }
 
     void Erase(const Key &key)
