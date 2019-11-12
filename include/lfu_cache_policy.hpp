@@ -53,7 +53,7 @@ template <typename Key> class LFUCachePolicy : public ICachePolicy<Key>
         lfu_storage.clear();
     }
 
-    const Key& ReplCandidate() const override
+    const Key &ReplCandidate() const override
     {
         // at the beginning of the frequency_storage we have the
         // least frequency used value
