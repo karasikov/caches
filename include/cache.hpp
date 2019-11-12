@@ -7,7 +7,6 @@
 #include <functional>
 #include <limits>
 #include <memory>
-#include <mutex>
 #include <shared_mutex>
 #include <unordered_map>
 
@@ -22,7 +21,7 @@ class fixed_sized_cache
     using iterator = typename std::unordered_map<Key, Value>::iterator;
     using const_iterator =
         typename std::unordered_map<Key, Value>::const_iterator;
-    using write_guard = typename std::lock_guard<std::shared_mutex>;
+    using write_guard = typename std::unique_lock<std::shared_mutex>;
     using read_guard = typename std::shared_lock<std::shared_mutex>;
     using Callback =
         typename std::function<void(const Key &key, const Value &value)>;
