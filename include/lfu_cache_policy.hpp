@@ -2,6 +2,7 @@
 #define LFU_CACHE_POLICY_HPP
 
 #include "cache_policy.hpp"
+#include <cassert>
 #include <cstddef>
 #include <iostream>
 #include <map>
@@ -50,11 +51,10 @@ template <typename Key> class LFUCachePolicy : public ICachePolicy<Key>
     void Erase(const Key &key) override
     {
         auto it = lfu_storage.find(key);
-        if (it != lfu_storage.end())
-        {
-            frequency_storage.erase(it->second);
-            lfu_storage.erase(it);
-        }
+        assert(it != lfu_storage.end());
+
+        frequency_storage.erase(it->second);
+        lfu_storage.erase(it);
     }
 
     void Clear() override
