@@ -68,7 +68,7 @@ class fixed_sized_cache
 
     Value Get(const Key &key) const
     {
-        write_guard lock{safe_op};
+        read_guard lock{safe_op};
         auto elem_it = FindElem(key);
 
         if (elem_it == cache_items_map.end())
@@ -155,6 +155,6 @@ class fixed_sized_cache
     size_t max_cache_size;
     Callback OnEraseCallback;
 };
-}
+} // namespace caches
 
 #endif // CACHE_HPP

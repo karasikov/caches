@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <iostream>
 #include <map>
+#include <mutex>
 #include <unordered_map>
 
 namespace caches
@@ -13,9 +14,16 @@ template <typename Key> class LFUCachePolicy : public ICachePolicy<Key>
 {
   public:
     using lfu_iterator = typename std::multimap<std::size_t, Key>::iterator;
+    using touch_guard = typename std::unique_lock<std::mutex>;
 
     LFUCachePolicy() = default;
     ~LFUCachePolicy() override = default;
+
+    LFUCachePolicy(const LFUCachePolicy &other)
+        : frequency_storage(other.frequency_storage),
+          lfu_storage(other.lfu_storage)
+    {
+    }
 
     void Insert(const Key &key) override
     {
@@ -27,6 +35,8 @@ template <typename Key> class LFUCachePolicy : public ICachePolicy<Key>
 
     void Touch(const Key &key) override
     {
+        touch_guard lock{touch_op};
+
         // get the previous frequency value of a key
         auto elem_for_update = lfu_storage[key];
         auto updated_elem =
@@ -63,6 +73,7 @@ template <typename Key> class LFUCachePolicy : public ICachePolicy<Key>
   private:
     std::multimap<std::size_t, Key> frequency_storage;
     std::unordered_map<Key, lfu_iterator> lfu_storage;
+    std::mutex touch_op;
 };
 } // namespace caches
 
