@@ -38,7 +38,7 @@ TEST(NoPolicyCache, Add_many_elements)
 
     for (std::size_t i = 0; i < cache_size; ++i)
     {
-        ASSERT_EQ(cache.Get(std::to_string(i)), i);
+        ASSERT_EQ(cache.Get(std::to_string(i)), ssize_t(i));
     }
 }
 
@@ -51,7 +51,7 @@ TEST(NoPolicyCache, Small_cache_many_elements)
     {
         std::string temp_key = std::to_string(i);
         cache.Put(temp_key, i);
-        ASSERT_EQ(cache.Get(temp_key), i);
+        ASSERT_EQ(cache.Get(temp_key), ssize_t(i));
     }
 
     ASSERT_EQ(cache.Size(), cache_size);

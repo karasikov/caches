@@ -14,6 +14,7 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 endif()
 
 option(BUILD_TEST "Build tests for the project" ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
 
 if (${BUILD_TEST})
   enable_testing()

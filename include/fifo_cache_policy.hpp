@@ -17,12 +17,12 @@ template <typename Key> class FIFOCachePolicy : public ICachePolicy<Key>
         fifo_queue.emplace_front(key);
     }
     // handle request to the key-element in a cache
-    void Touch(const Key &key) override
+    void Touch(const Key &) override
     {
         // nothing to do here in the FIFO strategy
     }
     // handle element deletion from a cache
-    void Erase(const Key &key) override
+    void Erase(const Key &) override
     {
         fifo_queue.pop_back();
     }
