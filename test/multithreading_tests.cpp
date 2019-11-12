@@ -4,6 +4,8 @@
 #include "lfu_cache_policy.hpp"
 #include "lru_cache_policy.hpp"
 
+#include <thread>
+
 #include <gtest/gtest.h>
 
 template <typename Key, typename Value>
@@ -34,18 +36,28 @@ TYPED_TEST_CASE(CacheTest, CacheTypes);
 
 TYPED_TEST(CacheTest, Multithreaded)
 {
-    TypeParam cache(10);
+    TypeParam cache(90);
 
-#pragma omp parallel for num_threads(4)
-    for (size_t i = 0; i < 1000000; ++i)
+    std::vector<std::thread> threads;
+    for (size_t i = 0; i < 4; ++i)
     {
-        try
-        {
-            cache.Get(i % 100);
-        }
-        catch (...)
-        {
-            cache.Put(i % 100, i);
-        }
+        threads.emplace_back([&cache]() {
+            for (size_t j = 0; j < 20000; ++j)
+            {
+                try
+                {
+                    EXPECT_EQ(j % 100, cache.Get(j % 100));
+                }
+                catch (...)
+                {
+                    cache.Put(j % 100, j % 100);
+                }
+            }
+        });
+    }
+
+    for (auto &thread : threads)
+    {
+        thread.join();
     }
 }
