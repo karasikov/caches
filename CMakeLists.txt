@@ -13,7 +13,7 @@ option(BUILD_TEST "Build tests for the project" ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -g")
 
 unset(OpenMP_CXX_FLAGS CACHE)
-if ((CMAKE_CXX_COMPILER_ID MATCHES AppleClang) OR (CMAKE_CXX_COMPILER_ID MATCHES Clang))
+if (CMAKE_CXX_COMPILER_ID MATCHES AppleClang)
   find_package(OPENMP REQUIRED)
 else()
   find_package(OpenMP REQUIRED)
