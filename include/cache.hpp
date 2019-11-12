@@ -102,9 +102,10 @@ class fixed_sized_cache
     {
         write_guard lock{safe_op};
 
+        cache_policy.Clear();
+
         for (auto it = begin(); it != end(); ++it)
         {
-            cache_policy.Erase(it->first);
             OnEraseCallback(it->first, it->second);
         }
         cache_items_map.clear();
