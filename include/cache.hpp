@@ -92,6 +92,11 @@ class fixed_sized_cache
         return cache_items_map.size();
     }
 
+    size_t size() const
+    {
+        return Size();
+    }
+
     void Clear()
     {
         operation_guard lock{safe_op};
