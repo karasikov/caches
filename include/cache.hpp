@@ -8,6 +8,7 @@
 #include <limits>
 #include <memory>
 #include <mutex>
+#include <shared_mutex>
 #include <unordered_map>
 
 namespace caches
@@ -21,7 +22,8 @@ class fixed_sized_cache
     using iterator = typename std::unordered_map<Key, Value>::iterator;
     using const_iterator =
         typename std::unordered_map<Key, Value>::const_iterator;
-    using operation_guard = typename std::lock_guard<std::mutex>;
+    using write_guard = typename std::lock_guard<std::shared_mutex>;
+    using read_guard = typename std::shared_lock<std::shared_mutex>;
     using Callback =
         typename std::function<void(const Key &key, const Value &value)>;
 
@@ -43,7 +45,7 @@ class fixed_sized_cache
 
     void Put(const Key &key, const Value &value)
     {
-        operation_guard lock{safe_op};
+        write_guard lock{safe_op};
         auto elem_it = FindElem(key);
 
         if (elem_it == cache_items_map.end())
@@ -67,7 +69,7 @@ class fixed_sized_cache
 
     const Value &Get(const Key &key) const
     {
-        operation_guard lock{safe_op};
+        read_guard lock{safe_op};
         auto elem_it = FindElem(key);
 
         if (elem_it == cache_items_map.end())
@@ -81,13 +83,13 @@ class fixed_sized_cache
 
     bool Cached(const Key &key) const
     {
-        operation_guard lock{safe_op};
+        read_guard lock{safe_op};
         return FindElem(key) != cache_items_map.end();
     }
 
     size_t Size() const
     {
-        operation_guard lock{safe_op};
+        read_guard lock{safe_op};
 
         return cache_items_map.size();
     }
@@ -99,7 +101,7 @@ class fixed_sized_cache
 
     void Clear()
     {
-        operation_guard lock{safe_op};
+        write_guard lock{safe_op};
 
         for (auto it = begin(); it != end(); ++it)
         {
@@ -149,7 +151,7 @@ class fixed_sized_cache
   private:
     std::unordered_map<Key, Value> cache_items_map;
     mutable Policy cache_policy;
-    mutable std::mutex safe_op;
+    mutable std::shared_mutex safe_op;
     size_t max_cache_size;
     Callback OnEraseCallback;
 };

@@ -1,17 +1,13 @@
-cmake_minimum_required(VERSION 2.8.7)
+cmake_minimum_required(VERSION 3.1.3)
 
 project(caches)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CACHE_INCLUDE_DIRS ${caches_SOURCE_DIR}/include CACHE INTERNAL "")
-
-if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
-	add_definitions(/std:c++latest -DGTEST_LANG_CXX11=1 /DGTEST_HAS_TR1_TUPLE=0)
-endif()
 
 option(BUILD_TEST "Build tests for the project" ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
