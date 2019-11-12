@@ -68,7 +68,7 @@ class fixed_sized_cache
 
     Value Get(const Key &key) const
     {
-        read_guard lock{safe_op};
+        write_guard lock{safe_op};
         auto elem_it = FindElem(key);
 
         if (elem_it == cache_items_map.end())
