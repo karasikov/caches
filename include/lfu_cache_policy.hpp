@@ -39,8 +39,12 @@ template <typename Key> class LFUCachePolicy : public ICachePolicy<Key>
 
     void Erase(const Key &key) override
     {
-        frequency_storage.erase(lfu_storage[key]);
-        lfu_storage.erase(key);
+        auto it = lfu_storage.find(key);
+        if (it != lfu_storage.end())
+        {
+            frequency_storage.erase(it->second);
+            lfu_storage.erase(it);
+        }
     }
 
     void Clear() override
