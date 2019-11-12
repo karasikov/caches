@@ -67,7 +67,7 @@ class fixed_sized_cache
         }
     }
 
-    const Value &Get(const Key &key) const
+    Value Get(const Key &key) const
     {
         read_guard lock{safe_op};
         auto elem_it = FindElem(key);
