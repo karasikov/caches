@@ -7,6 +7,7 @@
 #include <functional>
 #include <limits>
 #include <memory>
+#include <mutex>
 #include <shared_mutex>
 #include <unordered_map>
 
