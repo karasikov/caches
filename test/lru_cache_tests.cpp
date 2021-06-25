@@ -12,13 +12,14 @@ TEST(CacheTest, SimplePut)
 
     cache.Put("test", 666);
 
-    EXPECT_EQ(cache.Get("test"), 666);
+    EXPECT_EQ(*cache.TryGet("test"), 666);
 }
 
 TEST(CacheTest, MissingValue)
 {
     lru_cache_t<std::string, int> cache(1);
 
+    EXPECT_FALSE(cache.TryGet("test"));
     EXPECT_THROW(cache.Get("test"), std::range_error);
 }
 
@@ -35,11 +36,12 @@ TEST(CacheTest, KeepsAllValuesWithinCapacity)
 
     for (int i = 0; i < TEST_RECORDS - CACHE_CAP; ++i)
     {
+        EXPECT_FALSE(cache.TryGet(i));
         EXPECT_THROW(cache.Get(i), std::range_error);
     }
 
     for (int i = TEST_RECORDS - CACHE_CAP; i < TEST_RECORDS; ++i)
     {
-        EXPECT_EQ(i, cache.Get(i));
+        EXPECT_EQ(i, *cache.TryGet(i));
     }
 }

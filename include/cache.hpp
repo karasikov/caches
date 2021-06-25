@@ -6,8 +6,8 @@
 #include <cstddef>
 #include <functional>
 #include <limits>
-#include <memory>
 #include <mutex>
+#include <optional>
 #include <shared_mutex>
 #include <unordered_map>
 
@@ -67,18 +67,33 @@ class fixed_sized_cache
         }
     }
 
-    Value Get(const Key &key) const
+    std::optional<Value> TryGet(const Key &key) const
     {
         read_guard lock{safe_op};
         auto elem_it = FindElem(key);
 
-        if (elem_it == cache_items_map.end())
+        if (elem_it != cache_items_map.end())
+        {
+            cache_policy.Touch(key);
+            return elem_it->second;
+        }
+        else
+        {
+            return {};
+        }
+    }
+
+    // use sparingly to avoid exception handling overhead
+    Value Get(const Key &key) const
+    {
+        if (auto fetch = TryGet(key))
+        {
+            return *fetch;
+        }
+        else
         {
             throw std::range_error{"No such element in the cache"};
         }
-        cache_policy.Touch(key);
-
-        return elem_it->second;
     }
 
     bool Cached(const Key &key) const

@@ -10,7 +10,7 @@ TEST(NoPolicyCache, Add_one_element)
     caches::fixed_sized_cache<std::string, int> cache(cache_size);
 
     cache.Put("Hello", 1);
-    ASSERT_EQ(cache.Get("Hello"), 1);
+    ASSERT_EQ(*cache.TryGet("Hello"), 1);
 }
 
 TEST(NoPolicyCache, Add_delete_add_one_element)
@@ -20,8 +20,9 @@ TEST(NoPolicyCache, Add_delete_add_one_element)
 
     cache.Put("Hello", 1);
     cache.Put("World", 2);
+    ASSERT_FALSE(cache.TryGet("Hello"));
     ASSERT_THROW(cache.Get("Hello"), std::range_error);
-    ASSERT_EQ(cache.Get("World"), 2);
+    ASSERT_EQ(*cache.TryGet("World"), 2);
 }
 
 TEST(NoPolicyCache, Add_many_elements)
@@ -38,7 +39,7 @@ TEST(NoPolicyCache, Add_many_elements)
 
     for (std::size_t i = 0; i < cache_size; ++i)
     {
-        ASSERT_EQ(cache.Get(std::to_string(i)), ssize_t(i));
+        ASSERT_EQ(*cache.TryGet(std::to_string(i)), ssize_t(i));
     }
 }
 
@@ -51,7 +52,7 @@ TEST(NoPolicyCache, Small_cache_many_elements)
     {
         std::string temp_key = std::to_string(i);
         cache.Put(temp_key, i);
-        ASSERT_EQ(cache.Get(temp_key), ssize_t(i));
+        ASSERT_EQ(*cache.TryGet(temp_key), ssize_t(i));
     }
 
     ASSERT_EQ(cache.Size(), cache_size);
