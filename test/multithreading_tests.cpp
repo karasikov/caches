@@ -44,11 +44,11 @@ TYPED_TEST(CacheTest, Multithreaded)
         threads.emplace_back([&cache]() {
             for (size_t j = 0; j < 20000; ++j)
             {
-                try
+                if (auto fetch = cache.TryGet(j % 100))
                 {
-                    EXPECT_EQ(j % 100, cache.Get(j % 100));
+                    EXPECT_EQ(j % 100, *fetch);
                 }
-                catch (...)
+                else
                 {
                     cache.Put(j % 100, j % 100);
                 }
