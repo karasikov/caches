@@ -20,12 +20,24 @@ class fixed_sized_cache
 {
   public:
     using iterator = typename std::unordered_map<Key, Value>::iterator;
-    using const_iterator =
-        typename std::unordered_map<Key, Value>::const_iterator;
+    using const_iterator = typename std::unordered_map<Key, Value>::const_iterator;
     using write_guard = typename std::unique_lock<std::shared_mutex>;
     using read_guard = typename std::shared_lock<std::shared_mutex>;
-    using Callback =
-        typename std::function<void(const Key &key, const Value &value)>;
+    using Callback = typename std::function<void(const Key &key, const Value &value)>;
+
+    fixed_sized_cache(fixed_sized_cache&& other)
+        : cache_items_map(std::move(other.cache_items_map)),
+          cache_policy(std::move(other.cache_policy)),
+          max_cache_size(other.max_cache_size),
+          OnEraseCallback(std::move(other.OnEraseCallback)) {}
+
+    fixed_sized_cache& operator=(fixed_sized_cache&& other) {
+        cache_items_map = std::move(other.cache_items_map);
+        cache_policy = std::move(other.cache_policy);
+        max_cache_size = other.max_cache_size;
+        OnEraseCallback = std::move(other.OnEraseCallback);
+        return *this;
+    }
 
     fixed_sized_cache(size_t max_size, const Policy &policy = Policy(),
                       Callback OnErase = [](const Key &, const Value &) {})
