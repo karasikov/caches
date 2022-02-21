@@ -42,13 +42,7 @@ class fixed_sized_cache
     fixed_sized_cache(size_t max_size, const Policy &policy = Policy(),
                       Callback OnErase = [](const Key &, const Value &) {})
         : cache_policy(policy), max_cache_size(max_size),
-          OnEraseCallback(OnErase)
-    {
-        if (max_cache_size == 0)
-        {
-            max_cache_size = std::numeric_limits<size_t>::max();
-        }
-    }
+          OnEraseCallback(OnErase) {}
 
     ~fixed_sized_cache()
     {
@@ -57,6 +51,9 @@ class fixed_sized_cache
 
     void Put(const Key &key, const Value &value)
     {
+        if (!max_cache_size)
+            return;
+
         write_guard lock{safe_op};
         auto elem_it = FindElem(key);
 
@@ -81,6 +78,9 @@ class fixed_sized_cache
 
     std::optional<Value> TryGet(const Key &key) const
     {
+        if (!max_cache_size)
+            return {};
+
         read_guard lock{safe_op};
         auto elem_it = FindElem(key);
 
@@ -110,6 +110,9 @@ class fixed_sized_cache
 
     bool Cached(const Key &key) const
     {
+        if (!max_cache_size)
+            return false;
+
         read_guard lock{safe_op};
         return FindElem(key) != cache_items_map.end();
     }
@@ -152,8 +155,11 @@ class fixed_sized_cache
   protected:
     void Insert(const Key &key, const Value &value)
     {
-        cache_policy.Insert(key);
-        cache_items_map.emplace(key, value);
+        if (max_cache_size)
+        {
+            cache_policy.Insert(key);
+            cache_items_map.emplace(key, value);
+        }
     }
 
     void Erase(const Key &key)
@@ -167,8 +173,11 @@ class fixed_sized_cache
 
     void Update(const Key &key, const Value &value)
     {
-        cache_policy.Touch(key);
-        cache_items_map[key] = value;
+        if (max_cache_size)
+        {
+            cache_policy.Touch(key);
+            cache_items_map[key] = value;
+        }
     }
 
     const_iterator FindElem(const Key &key) const
